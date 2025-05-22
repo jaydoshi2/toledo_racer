@@ -43,7 +43,7 @@ export default function DeepRacerGetStarted() {
                 {/* Arrow */}
                 <div className="hidden md:flex items-center justify-center">
                   <div className="w-16 h-0.5 bg-gray-300"></div>
-                </div>
+                </div>className="light" 
 
                 {/* Step 2: Create model */}
                 <div className="flex flex-col items-center text-center">
