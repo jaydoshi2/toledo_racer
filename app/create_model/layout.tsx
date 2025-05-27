@@ -28,7 +28,7 @@
             <span className="font-bold">AWS DeepRacer</span>
           </Link>
           <div className="mx-2">{">"}</div>
-          <Link href="#" className="text-white hover:underline">
+          <Link href="your_models" className="text-white hover:underline">
             Your models
           </Link>
           <div className="mx-2">{">"}</div>
