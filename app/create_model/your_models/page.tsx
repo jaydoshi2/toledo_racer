@@ -198,7 +198,7 @@ export default function YourModels() {
                     />
                   </TableCell>
                   <TableCell>
-                    <Link href={`/models/${model.id}`} className="text-blue-600 hover:underline">
+                    <Link href={`/your_models/models/${model.id}`} className="text-blue-600 hover:underline">
                       {model.name}
                     </Link>
                   </TableCell>
@@ -216,4 +216,3 @@ export default function YourModels() {
     </div>
   )
 }
- 
