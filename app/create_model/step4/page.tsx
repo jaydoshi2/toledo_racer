@@ -1,107 +1,89 @@
-"use client"
+    // pages/create_model/step5/page.tsx
+    "use client"
+    import Link from "next/link";
+    import { Button } from "@/components/ui/button"; // Assuming you have shadcn/ui or similar Button component
+    import CodeEditor from "@/components/CodeEditor"; // Adjust path as per your project structure
+    import { useState } from "react";
 
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { useState } from "react"
-import HolyBro500_image from "../../../public/HolyBro500_image.webp"
+    export default function Step5() {
+    const initialCode = `def reward_function(params):
+        # Example of rewarding the agent to follow center line
+        
+        # Read input parameters:
+        track_width = params['track_width']
+        distance_from_center = params['distance_from_center']
+        
+        # Calculate 3 markers that are at varying distances away from the center line
+        marker_1 = 0.1 * track_width
+        marker_2 = 0.25 * track_width
+        marker_3 = 0.5 * track_width
+        
+        # Give higher reward if the car is closer to center line and vice versa
+        if distance_from_center <= marker_1:
+            reward = 1.0
+        elif distance_from_center <= marker_2:
+            reward = 0.5
+        elif distance_from_center <= marker_3:
+            reward = 0.1
+        else:
+            reward = 1e-3 # likely crashed/ close to off track
+        
+        return float(reward)`;
 
-export default function Step4() {
-  const [selectedVehicle, setSelectedVehicle] = useState("original-deepracer")
-  const [currentPage, setCurrentPage] = useState(1)
+    const [code, setCode] = useState<string>(initialCode);
+    const [resetKey, setResetKey] = useState(0);
 
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Choose vehicle shell and sensor configuration</h1>
 
-      {/* Vehicle selection section */}
-      <Card className="mb-6">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-medium">Vehicle shell with sensor configuration (1)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Search box */}
-          <div className="mb-4">
-            <Input type="text" placeholder="Search" className="max-w-md" />
-          </div>
+    const handleCodeChange = (newCode: string) => {
+        setCode(newCode);
+        console.log("Current code:", newCode); // For debugging
+    };
 
-          {/* Pagination */}
-          <div className="flex justify-end items-center mb-4">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                <span className="sr-only">Previous page</span>
-              </Button>
-              <span className="text-sm">{currentPage}</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full"
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage === 1} // Assuming only 1 page for now
-              >
-                <ChevronRight className="h-4 w-4" />
-                <span className="sr-only">Next page</span>
-              </Button>
+    const handleReset = () => {
+        setCode(initialCode);
+        setResetKey(prev => prev + 1);
+    };
+    const handleValidate = () => {
+        // Implement validation logic here
+        alert("Validation logic would go here!");
+    };
+
+    return (
+        <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6">Step 5: Customize reward function</h1>
+        <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-2">Reward function <span className="text-blue-600 text-sm cursor-pointer">info</span></h2>
+            <p className="text-gray-700">
+            The reward function describes immediate feedback (as a score for reward or penalty) when the vehicle takes an action to move from a given position
+            on the track to a new position. Its purpose is to encourage the vehicle to make moves along the track to reach its destination quickly. The model
+            training process will attempt to find a policy which maximizes the average total reward the vehicle experiences. <span className="text-blue-600 cursor-pointer">Learn more</span> about the reward function
+            and the reward input parameters you can use in your function.
+            </p>
+        </div>
+
+        <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">Code editor</h2>
+            <div className="flex justify-end gap-2 mb-2">
+            <Button variant="outline">Reward function examples</Button>
+            <Button variant="outline" onClick={handleReset}>Reset</Button>
+            <Button variant="outline" onClick={handleValidate}>Validate</Button>
             </div>
-          </div>
+                <div className="h-[400px] rounded-md shadow-inner bg-white dark:bg-black p-1">
+                    <CodeEditor 
+    key={resetKey}
+    initialDoc={code} 
+    onChange={handleCodeChange} 
+/>
 
-          {/* Vehicle options */}
-          <RadioGroup value={selectedVehicle} onValueChange={setSelectedVehicle} className="grid grid-cols-1 gap-4">
-            {/* The Original DeepRacer */}
-            <div
-              className={`border rounded-md relative cursor-pointer transition-colors ${
-                selectedVehicle === "original-deepracer" ? "border-blue-500 bg-blue-50" : "hover:bg-gray-50"
-              }`}
-              onClick={() => setSelectedVehicle("original-deepracer")}
-            >
-              <div className="p-4 pb-2">
-                <div className="flex items-start">
-                  <RadioGroupItem value="original-deepracer" id="original-deepracer" className="mt-1" />
-                  <div className="ml-2">
-                    <Label htmlFor="original-deepracer" className="font-medium cursor-pointer">
-                      The Original DeepRacer
-                    </Label>
-                    <p className="text-xs text-gray-600 mt-1">Sensor(s): Camera; Shell: DeepRacer</p>
-                  </div>
                 </div>
-              </div>
-              <div className="p-4 pt-0">
-                <Image
-                  src={HolyBro500_image || "/placeholder.svg"}
-                  alt="The Original DeepRacer"
-                  className="w-full h-auto max-h-64 object-contain"
-                />
-              </div>
-            </div>
+        </div>
 
-            {/* You can add more vehicle options here if needed */}
-          </RadioGroup>
-        </CardContent>
-      </Card>
-
-      {/* Action buttons */}
-      <div className="flex justify-end gap-4">
-        <Button variant="outline">Cancel</Button>
-        <Button variant="outline" asChild>
-          <Link href="/create_model/step3">Previous</Link>
-        </Button>
-        <Button asChild className="bg-[#ff9900] hover:bg-[#ec8c04] text-black">
-          <Link href="/create_model/step5">Next</Link>
-        </Button>
-      </div>
-    </div>
-  )
-}
-    
+        <div className="flex justify-between mt-6">
+            <Button variant="outline" asChild>
+            <Link href="/create_model/step3">Previous: Choose vehicle</Link>
+            </Button>
+            <Button className="bg-[#ff9900] hover:bg-[#ec8c04] text-black">Create model</Button>
+        </div>
+        </div>
+    );
+    }

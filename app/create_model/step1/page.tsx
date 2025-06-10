@@ -9,10 +9,26 @@ import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
+import { useStepWizard } from "../layout"
 
 export default function Step1() {
   const [selectedTrack, setSelectedTrack] = useState("track1")
   const [trackDirection, setTrackDirection] = useState("counterclockwise")
+  const [modelName, setModelName] = useState("")
+  const [description, setDescription] = useState("")
+  const [touched, setTouched] = useState(false)
+  const { setStepCompletion, setStepData } = useStepWizard()
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setTouched(true)
+    if (!modelName.trim() || !description.trim()) return
+    setStepData(1, { modelName, description, selectedTrack, trackDirection })
+    setStepCompletion(1, true)
+    window.location.href = "/create_model/step2"
+  }
+
+  const isValid = modelName.trim() && description.trim()
 
   return (
     <div className="p-6">
@@ -65,17 +81,17 @@ export default function Step1() {
         <CardContent>
           <div className="mb-4">
             <Label htmlFor="model-name">Model name</Label>
-            <Input id="model-name" placeholder="MyRacer or model name" className="mt-1" />
+            <Input id="model-name" placeholder="MyRacer or model name" className="mt-1" value={modelName} onChange={e => setModelName(e.target.value)} />
             <div className="text-xs text-gray-500 mt-1">
-              The model name can have up to 64 characters. Valid characters: A-Z, a-z, 0-9, and hyphen (-). No spaces or
-              underscores (_)
+              The model name can have up to 64 characters. Valid characters: A-Z, a-z, 0-9, and hyphen (-). No spaces or underscores (_)
             </div>
+            {touched && !modelName.trim() && <div className="text-xs text-red-500 mt-1">Model name is required.</div>}
           </div>
-
           <div>
-            <Label htmlFor="training-description">Training job description - optional</Label>
-            <Textarea id="training-description" placeholder="Log details for quick reference" className="mt-1 h-24" />
+            <Label htmlFor="training-description">Training job description</Label>
+            <Textarea id="training-description" placeholder="Log details for quick reference" className="mt-1 h-24" value={description} onChange={e => setDescription(e.target.value)} />
             <div className="text-xs text-gray-500 mt-1">The model description can have up to 255 characters.</div>
+            {touched && !description.trim() && <div className="text-xs text-red-500 mt-1">Description is required.</div>}
           </div>
         </CardContent>
       </Card>
@@ -229,9 +245,11 @@ export default function Step1() {
 
       {/* Action buttons */}
       <div className="flex justify-end gap-4">
-        <Button variant="outline">Cancel</Button>
-        <Button asChild className="bg-[#ff9900] hover:bg-[#ec8c04] text-black">
-          <Link href="/create_model/step2">Next</Link>
+        <Button variant="outline" asChild>
+          <Link href="/">Cancel</Link>
+        </Button>
+        <Button className="bg-[#ff9900] hover:bg-[#ec8c04] text-black" onClick={handleNext} disabled={!isValid}>
+          Next
         </Button>
       </div>
     </div>

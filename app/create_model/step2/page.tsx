@@ -183,8 +183,25 @@ export default function Step2() {
             </CollapsibleTrigger>
             <CollapsibleContent className="p-3 border-t">
               <p className="text-sm text-gray-600">
-                Hyperparameter settings will be displayed here. You can customize these parameters to fine-tune your
-                model's training.
+               <h4>Number of epochs</h4>
+               <RadioGroup>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="10" id="10" />
+                  <Label htmlFor="10">10</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="20" id="20" />
+                  <Label htmlFor="20">20</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="30" id="30" />
+                  <Label htmlFor="30">30</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="40" id="40" />
+                  <Label htmlFor="40">40</Label>
+                </div>
+               </RadioGroup>
               </p>
             </CollapsibleContent>
           </Collapsible>
