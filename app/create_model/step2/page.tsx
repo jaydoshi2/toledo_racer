@@ -19,7 +19,7 @@ export default function Step2() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Create model</h1>
 
-      {/* Race type section */}
+     {/* Race type section */}
       <Card className="mb-6">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-medium">Race type</CardTitle>
@@ -36,7 +36,7 @@ export default function Step2() {
                 }`}
                 onClick={() => setRaceType("time-trial")}
               >
-                <div className="flex items-start mb-4">
+  <div className="flex items-start mb-4">
                   <RadioGroupItem value="time-trial" id="time-trial" className="mt-1" />
                   <div className="ml-2">
                     <Label htmlFor="time-trial" className="font-medium cursor-pointer">
