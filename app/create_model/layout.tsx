@@ -57,7 +57,7 @@ export default function CreateModelLayout({
       <div className="min-h-screen bg-[#f8f9fa]">
         <header className="bg-[#232f3e] text-white p-4 flex items-center">
           <Link href="/" className="flex items-center gap-2 text-white">
-            <span className="font-bold">AWS DeepRacer</span>
+            <span className="font-bold">DeepFlyer</span>
           </Link>
           <div className="mx-2">{">"}</div>
           <Link href="your_models" className="text-white hover:underline">
