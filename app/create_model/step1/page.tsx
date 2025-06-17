@@ -248,7 +248,7 @@ export default function Step1() {
         <Button variant="outline" asChild>
           <Link href="/">Cancel</Link>
         </Button>
-        <Button className="bg-[#ff9900] hover:bg-[#ec8c04] text-black" onClick={handleNext} disabled={!isValid}>
+        <Button className="bg-[#ffd200] hover:bg-[#ec8c04] text-black" onClick={handleNext} disabled={!isValid}>
           Next
         </Button>
       </div>

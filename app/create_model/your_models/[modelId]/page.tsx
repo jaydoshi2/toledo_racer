@@ -66,7 +66,7 @@ export default function ModelDetails({ params }: { params: { modelId: string } }
                 <DropdownMenuItem>Delete model</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button className="bg-[#ff9900] hover:bg-[#ec8c04] text-black">Submit to virtual race</Button>
+            <Button className="bg-[#ffd200] hover:bg-[#ec8c04] text-black">Submit to virtual race</Button>
           </div>
         </div>
 

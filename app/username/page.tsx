@@ -30,7 +30,7 @@ export default function AuthPage() {
     }
     setLoginLoading(true)
     try {
-      const res = await fetch(`http://localhost:5000/users/${encodeURIComponent(loginUsername)}`)
+      const res = await fetch(`http://172.31.48.159:5000/users/${encodeURIComponent(loginUsername)}`)
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         setLoginError(data.detail || "User not found. Please sign up.")
@@ -117,7 +117,7 @@ export default function AuthPage() {
                   {loginError && <div className="text-red-500 text-sm">{loginError}</div>}
                   <Button
                     type="submit"
-                    className="bg-[#ff9900] hover:bg-[#ec8c04] text-black"
+                    className="bg-[#ffd200] hover:bg-[#ec8c04] text-black"
                     disabled={loginLoading}
                   >
                     {loginLoading ? "Logging in..." : "Enter"}
@@ -162,7 +162,7 @@ export default function AuthPage() {
                   {signupError && <div className="text-red-500 text-sm">{signupError}</div>}
                   <Button
                     type="submit"
-                    className="bg-[#ff9900] hover:bg-[#ec8c04] text-black"
+                    className="bg-[#ffd200] hover:bg-[#ec8c04] text-black"
                     disabled={signupLoading}
                   >
                     {signupLoading ? "Signing up..." : "Enter"}

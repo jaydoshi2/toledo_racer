@@ -82,7 +82,7 @@
             <Button variant="outline" asChild>
             <Link href="/create_model/step3">Previous: Choose vehicle</Link>
             </Button>
-            <Button className="bg-[#ff9900] hover:bg-[#ec8c04] text-black">Create model</Button>
+            <Button className="bg-[#ffd200] hover:bg-[#ec8c04] text-black">Create model</Button>
         </div>
         </div>
     );

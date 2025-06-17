@@ -97,7 +97,7 @@ export default function Step4() {
         <Button variant="outline" asChild>
           <Link href="/create_model/step2">Previous</Link>
         </Button>
-        <Button asChild className="bg-[#ff9900] hover:bg-[#ec8c04] text-black">
+        <Button asChild className="bg-[#ffd200] hover:bg-[#ec8c04] text-black">
           <Link href="/create_model/step4">Next</Link>
         </Button>
       </div>

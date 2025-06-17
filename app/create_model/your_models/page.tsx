@@ -101,7 +101,7 @@ export default function YourModels() {
                 <DropdownMenuItem>Clone selected</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button asChild className="bg-[#ff9900] hover:bg-[#ec8c04] text-black">
+            <Button asChild className="bg-[#ffd200] hover:bg-[#ec8c04] text-black">
               <Link href="/create_model">Create model</Link>
             </Button>
           </div>

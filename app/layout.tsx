@@ -11,8 +11,8 @@ import { ThemeProvider as NextThemesProvider } from "next-themes"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "AWS DeepRacer - Get started with reinforcement learning",
-  description: "Learn how to get started with AWS DeepRacer and reinforcement learning",
+  title: "Deep Fly - Get started with reinforcement learning in Drone",
+  description: "Learn how to get started with Deep Fly and reinforcement learning in Drone",
 }
 
 export default function RootLayout({
