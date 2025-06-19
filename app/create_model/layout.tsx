@@ -55,25 +55,38 @@ export default function CreateModelLayout({
   return (
     <StepWizardContext.Provider value={{ stepCompletion, setStepCompletion, stepData, setStepData }}>
       <div className="min-h-screen bg-[#f8f9fa]">
-        <header className="bg-[#232f3e] text-white p-4 flex items-center">
-          <Link href="/" className="flex items-center gap-2 text-white">
-            <span className="font-bold">DeepFlyer</span>
-          </Link>
-          <div className="mx-2">{">"}</div>
-          <Link href="your_models" className="text-white hover:underline">
-            Your models
-          </Link>
-          <div className="mx-2">{">"}</div>
-          <Link href="/create_model" className="text-white hover:underline">
-            Create model
-          </Link>
-          {pathname !== "/create_model" && (
-            <>
-              <div className="mx-2">{">"}</div>
-              <span>{currentStep}</span>
-            </>
-          )}
-        </header>
+      <header className="bg-[#003E7E] text-white p-4 flex items-center justify-between">
+  {/* Left Side Navigation */}
+  <div className="flex items-center">
+    <Link href="/" className="flex items-center gap-2 text-white">
+      <span className="font-bold">DeepFlyer</span>
+    </Link>
+    <div className="mx-2">{">"}</div>
+    <Link href="/your_models" className="text-white hover:underline">
+      Your models
+    </Link>
+    <div className="mx-2">{">"}</div>
+    <Link href="/create_model" className="text-white hover:underline">
+      Create model
+    </Link>
+    {pathname !== "/create_model" && (
+      <>
+        <div className="mx-2">{">"}</div>
+        <span>{currentStep}</span>
+      </>
+    )}
+  </div>
+
+  {/* Right Side Image */}
+  <div className="ml-auto">
+    <img
+      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRH7eNn2Ofw_A0JInSD16fQ086NIbcAq1OAwA&s"
+      alt="Drone"
+      className="h-10 w-40 object-cover"
+    />
+  </div>
+</header>
+
 
         <div className="flex">
           {/* Sidebar */}

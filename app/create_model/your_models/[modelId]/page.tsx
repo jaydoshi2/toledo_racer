@@ -36,7 +36,7 @@ export default function ModelDetails({ params }: { params: { modelId: string } }
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
-      <header className="bg-[#232f3e] text-white p-4 flex items-center">
+      <header className="bg-[#003E7E] text-white p-4 flex items-center">
         <Link href="#" className="flex items-center gap-2 text-white hover:underline">
           <span className="font-bold">AWS DeepRacer</span>
         </Link>

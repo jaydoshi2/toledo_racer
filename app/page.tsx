@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 export default function DeepRacerGetStarted() {
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
-      <header className="bg-[#013e7d] text-white p-4 flex items-center">
+      <header className="bg-[#003E7E] text-white p-4 flex items-center">
         <Link href="#" className="flex items-center gap-2 text-white">
           <span className="font-bold">Deep Fly</span>
         </Link>

@@ -1,0 +1,11 @@
+--2025-06-18 17:21:03--  https://www.google.com/url?sa=i
+Resolving www.google.com (www.google.com)... 142.250.191.196, 2607:f8b0:4009:81a::2004
+Connecting to www.google.com (www.google.com)|142.250.191.196|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘url?sa=i’
+
+url?sa=i                0  --.-KB/s               url?sa=i            1.42K  --.-KB/s    in 0s      
+
+2025-06-18 17:21:03 (12.6 MB/s) - ‘url?sa=i’ saved [1453]
+

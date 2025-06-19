@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { useStepWizard } from "../layout"
+import drone_img from "../../../public/drone_img.png"
 
 export default function Step1() {
   const [selectedTrack, setSelectedTrack] = useState("track1")
@@ -37,46 +38,50 @@ export default function Step1() {
       {/* Overview section */}
       <Card className="mb-6">
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-lg font-medium">Overview</CardTitle>
+          <CardTitle className="text-lg font-medium">
+            Overview
+          </CardTitle>
+          
           <span className="text-xs text-blue-600 cursor-pointer">Info</span>
         </CardHeader>
+        <div className="border-t border-gray-300 mx-4 mb-2" /> 
         <CardContent>
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex-1">
-              <p className="mb-3">
-                In reinforcement learning for AWS DeepRacer, an <strong>agent</strong> (vehicle) learns from an{" "}
-                <strong>environment</strong> (a track) by interacting with it and receiving rewards for performing
-                specific actions.
-              </p>
-              <p className="mb-3">
-                The model training process will simulate multiple experiences of the vehicle on the track in an attempt
-                to find a <strong>policy</strong> (a function mapping the agent's current state to a driving decision)
-                which maximizes the average total reward the agent experiences.
-              </p>
-              <p>
-                After training, you will be able to evaluate the model's performance in a new environment, deploy the
-                model to a physical vehicle, or submit the model to a virtual race.
-              </p>
-            </div>
-            <div className="md:w-1/3">
-              <div className="border rounded p-4 bg-white">
-                <Image
-                  src="/placeholder.svg?height=200&width=300"
-                  alt="Reinforcement learning diagram"
-                  width={300}
-                  height={200}
-                  className="w-full"
-                />
-              </div>
-            </div>
-          </div>
-        </CardContent>
+  <div className="flex flex-col md:flex-row gap-6">
+    <div className="flex-1">
+      <p className="mb-3">
+        <strong>DeepFlyer</strong> is an innovative reinforcement learning platform inspired by AWS DeepRacer, designed specifically for autonomous drones. Here, the <strong>agent</strong> (the drone) learns to navigate a virtual 3D space using a combination of control theory (PID) and real-time feedback from its environment.
+      </p>
+      <p className="mb-3">
+        At the core of the system is a <strong>constant flight path</strong>—defined by an origin and a final destination point. The drone receives input in the form of its <strong>current position</strong>, <strong>propeller velocities</strong>, and <strong>orientation angle</strong>. These observations help determine whether it is on course, how far it has deviated (left or right error), and if its angle is aligned with the path.
+      </p>
+      <p className="mb-3">
+        Using a proportional control mechanism (P in PID), the model adjusts the drone's motor speeds based on the observed error. The drone learns through repeated trials—or <strong>epochs</strong>—to minimize the deviation from the path and maintain a stable angle. The training goal is to learn an optimal <strong>policy</strong> that ensures the drone reaches its target efficiently, even under uncertain conditions like wind disturbances.
+      </p>
+      <p>
+        The trained model can be evaluated in both <strong>Gazebo-based simulation environments</strong> and eventually deployed to real drones like the <strong>Holybro X500</strong> with PX4 for onboard communication and control.
+      </p>
+    </div>
+    <div className="md:w-1/3">
+      <div className="border rounded p-4 bg-white">
+        <Image
+          src={drone_img}
+          alt="DeepFlyer reinforcement learning diagram"
+          width={300}
+          height={200}
+          className="w-full"
+        />
+      </div>
+    </div>
+  </div>
+</CardContent>
+
       </Card>
 
       {/* Training details section */}
       <Card className="mb-6">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-medium">Training details</CardTitle>
+          <div className="border-t mt-1" />
         </CardHeader>
         <CardContent>
           <div className="mb-4">
@@ -138,9 +143,9 @@ export default function Step1() {
                     className="w-full"
                   />
                 </div>
-                <Button variant="secondary" size="sm" className="mt-2 bg-blue-600 text-white hover:bg-blue-700">
+                {/* <Button variant="secondary" size="sm" className="mt-2 bg-blue-600 text-white hover:bg-blue-700">
                   Virtual race
-                </Button>
+                </Button> */}
               </div>
 
               {/* Track 2 */}
@@ -208,17 +213,17 @@ export default function Step1() {
               </div>
             </div>
           </RadioGroup>
-
+{/* 
           <div className="mb-4">
             <Link href="#" className="text-blue-600 text-sm hover:underline">
               View more race tracks
             </Link>
-          </div>
+          </div> */}
 
           <div className="mb-4">
-            <div className="font-medium mb-2">Track direction</div>
-            <div className="text-sm text-gray-600 mb-2">Select the direction in which you want to race.</div>
-            <RadioGroup value={trackDirection} onValueChange={setTrackDirection} className="flex gap-4">
+            {/* <div className="font-medium mb-2">Track direction</div> */}
+            {/* <div className="text-sm text-gray-600 mb-2">Select the direction in which you want to race.</div> */}
+            {/* <RadioGroup value={trackDirection} onValueChange={setTrackDirection} className="flex gap-4">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="counterclockwise" id="counterclockwise" />
                 <Label htmlFor="counterclockwise">Counterclockwise</Label>
@@ -227,21 +232,21 @@ export default function Step1() {
                 <RadioGroupItem value="clockwise" id="clockwise" />
                 <Label htmlFor="clockwise">Clockwise</Label>
               </div>
-            </RadioGroup>
+            </RadioGroup> */}
           </div>
         </CardContent>
       </Card>
 
       {/* Tags section */}
-      <Card className="mb-6">
+      {/* <Card className="mb-6">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-medium flex items-center">
             <span>Tags - </span>
             <span className="text-gray-500 font-normal ml-1">optional</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>{/* Tags content would go here */}</CardContent>
-      </Card>
+        <CardContent>Tags content would go here</CardContent>
+      </Card> */}
 
       {/* Action buttons */}
       <div className="flex justify-end gap-4">

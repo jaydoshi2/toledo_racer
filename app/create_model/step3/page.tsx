@@ -21,17 +21,17 @@ export default function Step4() {
 
       {/* Vehicle selection section */}
       <Card className="mb-6">
-        <CardHeader className="pb-2">
+        {/* <CardHeader className="pb-2">
           <CardTitle className="text-lg font-medium">Vehicle shell with sensor configuration (1)</CardTitle>
-        </CardHeader>
+        </CardHeader> */}
         <CardContent>
           {/* Search box */}
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <Input type="text" placeholder="Search" className="max-w-md" />
-          </div>
+          </div> */}
 
           {/* Pagination */}
-          <div className="flex justify-end items-center mb-4">
+          {/* <div className="flex justify-end items-center mb-4">
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
@@ -55,7 +55,7 @@ export default function Step4() {
                 <span className="sr-only">Next page</span>
               </Button>
             </div>
-          </div>
+          </div> */}
 
           {/* Vehicle options */}
           <RadioGroup value={selectedVehicle} onValueChange={setSelectedVehicle} className="grid grid-cols-1 gap-4">

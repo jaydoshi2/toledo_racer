@@ -30,7 +30,7 @@ export default function AuthPage() {
     }
     setLoginLoading(true)
     try {
-      const res = await fetch(`http://172.31.48.159:5000/users/${encodeURIComponent(loginUsername)}`)
+      const res = await fetch(`http://100.66.139.58:5000/users/${encodeURIComponent(loginUsername)}`)
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         setLoginError(data.detail || "User not found. Please sign up.")
