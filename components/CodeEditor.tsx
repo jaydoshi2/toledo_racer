@@ -1,15 +1,15 @@
 "use client";
+
 import React, { useEffect, useRef } from "react";
 import Editor, { loader, useMonaco, OnMount, OnChange } from "@monaco-editor/react";
 
-// Configure Monaco Editor loader to use CDN
 loader.config({
   paths: {
     vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs",
   },
 });
 
-interface ValidationError {
+export interface ValidationError {
   line: number;
   column: number;
   message: string;
@@ -29,12 +29,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   language = "python",
   validationErrors = [],
 }) => {
-  const editorRef = useRef<any>(null); // Use any to avoid monaco import
+  const editorRef = useRef<any>(null);
   const monaco = useMonaco();
 
   const handleEditorDidMount: OnMount = (editor) => {
     editorRef.current = editor;
-
     editor.updateOptions({
       fontSize: 14,
       tabSize: 4,
@@ -44,11 +43,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       scrollBeyondLastLine: false,
       renderLineHighlight: "all",
       contextmenu: true,
-      find: {
-        addExtraSpaceOnTop: false,
-        autoFindInSelection: "never",
-        seedSearchStringFromSelection: "always",
-      },
     });
   };
 
@@ -58,7 +52,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     }
   };
 
-  // Handle validation errors
   useEffect(() => {
     if (editorRef.current && monaco) {
       const model = editorRef.current.getModel();
@@ -67,7 +60,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           startLineNumber: error.line,
           startColumn: error.column,
           endLineNumber: error.line,
-          endColumn: error.column + 10,
+          endColumn: error.column + 1,
           message: error.message,
           severity:
             error.severity === "error"
@@ -80,7 +73,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     }
   }, [validationErrors, monaco]);
 
-  // Handle external changes to initialDoc
   useEffect(() => {
     if (editorRef.current && editorRef.current.getValue() !== initialDoc) {
       editorRef.current.setValue(initialDoc);
@@ -107,17 +99,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           tabSize: 4,
           insertSpaces: true,
           renderLineHighlight: "all",
-          selectionHighlight: false,
-          occurrencesHighlight: "off",
-          folding: true,
-          foldingHighlight: true,
-          renderWhitespace: "selection",
-          renderControlCharacters: false,
-          fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace',
-          contextmenu: true,
-          mouseWheelZoom: false,
-          multiCursorModifier: "ctrlCmd",
-          accessibilitySupport: "auto",
         }}
       />
     </div>

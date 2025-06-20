@@ -14,12 +14,19 @@ export default function DeepRacerGetStarted() {
         <Link href="#" className="text-white hover:underline">
           Get started
         </Link>
+        <div className="ml-auto">
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRH7eNn2Ofw_A0JInSD16fQ086NIbcAq1OAwA&s"
+            alt="Drone"
+            className="h-10 w-40 object-cover"
+          />
+        </div>
       </header>
 
       <main className="container mx-auto p-4 max-w-6xl">
         <h1 className="text-2xl font-bold my-6">Get started with reinforcement learning with Drone</h1>
 
-       
+
 
         <Card className="mb-6">
           <CardContent className="p-0">
@@ -28,7 +35,7 @@ export default function DeepRacerGetStarted() {
             </div>
             <div className="p-4">
               <p className="mb-4">
- Begin your journey by exploring the core components of a drone—learn how each part, from the frame and propellers to the flight controller, ESCs, motors, GPS, and battery, contributes to stable flight and aerial maneuverability
+                Begin your journey by exploring the core components of a drone—learn how each part, from the frame and propellers to the flight controller, ESCs, motors, GPS, and battery, contributes to stable flight and aerial maneuverability
               </p>
               <Button variant="outline" className="border-gray-300 flex items-center gap-2">
                 {/* <svg
@@ -43,9 +50,9 @@ export default function DeepRacerGetStarted() {
                   strokeLinejoin="round"
                   className="lucide lucide-play"
                 > */}
-                  {/* <polygon points="5 3 19 12 5 21 5 3" /> */}
+                {/* <polygon points="5 3 19 12 5 21 5 3" /> */}
                 {/* </svg> */}
-                Take a look
+                <Link href={"/take_a_look_1"}> Take a look</Link>
               </Button>
             </div>
           </CardContent>
@@ -64,7 +71,7 @@ export default function DeepRacerGetStarted() {
                 time.
               </p>
               <Button className="bg-[#ffd200] hover:bg-[#ec8c04] text-black">
-                   <Link href="/username">Create model</Link>
+                <Link href="/username">Create model</Link>
               </Button>
             </div>
           </CardContent>
