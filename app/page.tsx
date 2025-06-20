@@ -64,7 +64,7 @@ export default function DeepRacerGetStarted() {
                 time.
               </p>
               <Button className="bg-[#ffd200] hover:bg-[#ec8c04] text-black">
-                   <Link href="/create_model">Create model</Link>
+                   <Link href="/username">Create model</Link>
               </Button>
             </div>
           </CardContent>

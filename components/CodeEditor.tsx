@@ -1,49 +1,86 @@
 "use client";
 import React, { useEffect, useRef } from "react";
-import Editor, { OnChange, OnMount } from '@monaco-editor/react';
-import * as monaco from 'monaco-editor';
+import Editor, { loader, useMonaco, OnMount, OnChange } from "@monaco-editor/react";
+
+// Configure Monaco Editor loader to use CDN
+loader.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs",
+  },
+});
+
+interface ValidationError {
+  line: number;
+  column: number;
+  message: string;
+  severity: "error" | "warning";
+}
 
 interface CodeEditorProps {
   initialDoc: string;
   onChange?: (doc: string) => void;
   language?: "python" | "javascript" | "typescript";
+  validationErrors?: ValidationError[];
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
   initialDoc,
   onChange,
   language = "python",
+  validationErrors = [],
 }) => {
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const editorRef = useRef<any>(null); // Use any to avoid monaco import
+  const monaco = useMonaco();
 
-  const handleEditorDidMount: OnMount = (editor, monaco) => {
+  const handleEditorDidMount: OnMount = (editor) => {
     editorRef.current = editor;
-    
-    // Configure editor options
+
     editor.updateOptions({
       fontSize: 14,
       tabSize: 4,
       insertSpaces: true,
-      wordWrap: 'on',
+      wordWrap: "on",
       minimap: { enabled: false },
       scrollBeyondLastLine: false,
-      renderLineHighlight: 'all',
+      renderLineHighlight: "all",
       contextmenu: true,
       find: {
         addExtraSpaceOnTop: false,
-        autoFindInSelection: 'never',
-        seedSearchStringFromSelection: 'always'
-      }
+        autoFindInSelection: "never",
+        seedSearchStringFromSelection: "always",
+      },
     });
   };
 
-  const handleEditorChange: OnChange = (value, event) => {
+  const handleEditorChange: OnChange = (value) => {
     if (value !== undefined) {
       onChange?.(value);
     }
   };
 
-  // Handle external changes to initialDoc (like Reset button clicks)
+  // Handle validation errors
+  useEffect(() => {
+    if (editorRef.current && monaco) {
+      const model = editorRef.current.getModel();
+      if (model) {
+        const markers = validationErrors.map((error) => ({
+          startLineNumber: error.line,
+          startColumn: error.column,
+          endLineNumber: error.line,
+          endColumn: error.column + 10,
+          message: error.message,
+          severity:
+            error.severity === "error"
+              ? monaco.MarkerSeverity.Error
+              : monaco.MarkerSeverity.Warning,
+        }));
+
+        monaco.editor.setModelMarkers(model, "validation", markers);
+      }
+    }
+  }, [validationErrors, monaco]);
+
+  // Handle external changes to initialDoc
   useEffect(() => {
     if (editorRef.current && editorRef.current.getValue() !== initialDoc) {
       editorRef.current.setValue(initialDoc);
@@ -62,25 +99,25 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         onMount={handleEditorDidMount}
         options={{
           automaticLayout: true,
-          lineNumbers: 'on',
-          wordWrap: 'on',
+          lineNumbers: "on",
+          wordWrap: "on",
           minimap: { enabled: false },
           scrollBeyondLastLine: false,
           fontSize: 14,
           tabSize: 4,
           insertSpaces: true,
-          renderLineHighlight: 'all',
+          renderLineHighlight: "all",
           selectionHighlight: false,
           occurrencesHighlight: "off",
           folding: true,
           foldingHighlight: true,
-          renderWhitespace: 'selection',
+          renderWhitespace: "selection",
           renderControlCharacters: false,
           fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace',
           contextmenu: true,
           mouseWheelZoom: false,
-          multiCursorModifier: 'ctrlCmd',
-          accessibilitySupport: 'auto',
+          multiCursorModifier: "ctrlCmd",
+          accessibilitySupport: "auto",
         }}
       />
     </div>

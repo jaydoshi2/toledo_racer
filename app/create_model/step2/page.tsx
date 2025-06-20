@@ -273,6 +273,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
+import time_travel_drone from "@/public/time_travel_drone.png"
 
 export default function Step2() {
   const [raceType, setRaceType] = useState("time-trial")
@@ -314,9 +315,9 @@ export default function Step2() {
                 </div>
                 <div className="flex justify-center">
                   <Image
-                    src="/placeholder.svg?height=100&width=150"
+                    src= {time_travel_drone}
                     alt="Time trial illustration"
-                    width={150}
+                    width={200}
                     height={100}
                     className="opacity-70"
                   />
@@ -324,7 +325,7 @@ export default function Step2() {
               </div>
 
               {/* Object avoidance */}
-              <div
+              {/* <div
                 className={`border rounded-md p-4 relative cursor-pointer transition-colors ${
                   raceType === "object-avoidance" ? "border-blue-500 bg-blue-50" : "hover:bg-gray-50"
                 }`}
@@ -351,10 +352,10 @@ export default function Step2() {
                     className="opacity-70"
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* Head-to-head racing */}
-              <div
+              {/* <div
                 className={`border rounded-md p-4 relative cursor-pointer transition-colors ${
                   raceType === "head-to-head" ? "border-blue-500 bg-blue-50" : "hover:bg-gray-50"
                 }`}
@@ -380,7 +381,7 @@ export default function Step2() {
                     className="opacity-70"
                   />
                 </div>
-              </div>
+              </div> */}
             </RadioGroup>
           </div>
         </CardContent>
