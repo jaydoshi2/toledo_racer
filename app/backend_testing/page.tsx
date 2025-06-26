@@ -64,6 +64,12 @@ export default function DroneControl() {
           Move Forward
         </button>
         <button
+          onClick={() => sendCommand("Land")}
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Land
+        </button>
+        <button
           onClick={() => sendCommand("move_backward")}
           className="px-4 py-2 bg-blue-500 text-white rounded"
         >
