@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import CodeEditor from "@/components/CodeEditor";
+import { useRouter } from 'next/navigation';
 import { useState } from "react";
 import { ValidationError } from "@/components/pythonValidator"; // reuse interface
 import axios from "axios";
@@ -31,12 +32,76 @@ export default function Step5() {
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [isValidating, setIsValidating] = useState(false);
   const [validationStatus, setValidationStatus] = useState<string>("");
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleCodeChange = (newCode: string) => {
     setCode(newCode);
     setValidationErrors([]);
     setValidationStatus("");
   };
+ 
+const handleCreateModel = async () => {
+  setIsCreating(true);
+  setError(null);
+
+  try {
+    // Retrieve data from localStorage
+    const modelName = localStorage.getItem('modelName') || '';
+    const modelDescription = localStorage.getItem('description') || '';
+    const username = localStorage.getItem('username') || '';
+    const droneDetailsStr = localStorage.getItem('droneDetails');
+    const droneDetails = droneDetailsStr ? JSON.parse(droneDetailsStr) : {};
+
+    // Validate required fields
+    if (!modelName || !modelDescription || !username || !droneDetails || !droneDetails.algorithm) {
+      throw new Error('Missing required fields: modelName, description, username, or droneDetails');
+    }
+
+    // Define training_epochs (e.g., hardcoded or from state)
+    const trainingEpochs = 20; // Replace with state variable or form input if applicable
+
+    // Construct model data according to DroneModelCreate schema
+    const modelData = {
+      title: modelName,
+      description: modelDescription,
+      training_epochs: trainingEpochs,
+      drone_details: droneDetails,
+    };
+
+    // Send POST request to the correct endpoint
+    const response = await fetch(`http://localhost:8000/users/${username}/drone-models/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(modelData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Failed to create model');
+    }
+
+    const createdModel = await response.json();
+    console.log('Model created successfully:', createdModel);
+
+    // Optional: Clear localStorage after successful creation
+    localStorage.removeItem('modelName');
+    localStorage.removeItem('description');
+    localStorage.removeItem('droneDetails');
+    //localStorage.removeItem('username')o;
+
+    // Redirect to models page
+      router.push('/your_models');
+  } catch (err) {
+    console.error('Error creating model:', err);
+    setError(err instanceof Error ? err.message : 'Failed to create model');
+  } finally {
+    setIsCreating(false);
+  }
+};
 
   const handleReset = () => {
     setCode(initialCode);
@@ -102,7 +167,7 @@ export default function Step5() {
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
           <div className="flex gap-2">
-            <Button variant="outline">Reward function examples</Button>
+            
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
@@ -155,7 +220,7 @@ export default function Step5() {
         <Button variant="outline" asChild>
           <Link href="/create_model/step3">Previous: Choose vehicle</Link>
         </Button>
-        <Button className="bg-[#ffd200] hover:bg-[#ec8c04] text-black">Create model</Button>
+        <Button className="bg-[#ffd200] hover:bg-[#ec8c04] text-black" onClick={handleCreateModel} disabled={isCreating}>Create model</Button>
       </div>
     </div>
   );
