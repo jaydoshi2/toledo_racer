@@ -54,7 +54,7 @@ export default function Home() {
 
   // WebSocket for training updates
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8000/ws/train');
+    const ws = new WebSocket('ws://100.66.139.58:8000/ws/train');
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -83,7 +83,7 @@ export default function Home() {
 
   // WebSocket for drone control
   useEffect(() => {
-    const socket = new WebSocket('ws://localhost:8000/ws/control');
+    const socket = new WebSocket('ws://100.66.139.58:8000/ws/control');
 
     socket.onopen = () => {
       console.log('WebSocket connected');

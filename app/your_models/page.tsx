@@ -48,7 +48,7 @@ export default function YourModels() {
   const fetchUserModels = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`http://localhost:8000/users/${username}/drone-models/`)
+      const response = await fetch(`http://100.66.139.58:8000/users/${username}/drone-models/`)
 
       if (!response.ok) {
         throw new Error(`Failed to fetch models: ${response.statusText}`)

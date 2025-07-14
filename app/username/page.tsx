@@ -30,7 +30,7 @@ export default function AuthPage() {
     }
     setLoginLoading(true)
     try {
-      const res = await fetch(`http://localhost:8000/users/${encodeURIComponent(loginUsername)}`)
+      const res = await fetch(`http://100.66.139.58:8000/users/${encodeURIComponent(loginUsername)}`)
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         setLoginError(data.detail || "User not found. Please sign up.")
@@ -57,7 +57,7 @@ export default function AuthPage() {
     }
     setSignupLoading(true)
     try {
-      const res = await fetch("http://localhost:8000/users/", {
+      const res = await fetch("http://100.66.139.58:8000/users/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: signupUsername }),

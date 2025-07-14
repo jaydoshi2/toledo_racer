@@ -74,11 +74,11 @@ A Next.js-based frontend application for the **DeepFlyer** reinforcement learnin
    ```
 
 4. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+   Navigate to [http://100.66.139.58:3000](http://100.66.139.58:3000)
 
 ### Environment Configuration
 
-The frontend connects to the backend API at `http://localhost:8000`. Ensure your backend server is running before using the application.
+The frontend connects to the backend API at `http://100.66.139.58:8000`. Ensure your backend server is running before using the application.
 
 ## 🔧 Development
 

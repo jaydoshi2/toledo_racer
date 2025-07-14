@@ -38,19 +38,40 @@ interface ChartData {
   datasets: ChartDataset[];
 }
 
+// **********************************************************
+// UPDATED DroneModel Interface
+// **********************************************************
 interface DroneModel {
-  drone_name: string;
+  description: string;
+  drone_details: {
+    raceType: string;
+    algorithm: string;
+    flightAltitude: string;
+    velocityLimit: string;
+    yawLimit: string;
+    action_space_type: string;
+    reward_function: string;
+    environment_simulation: string;
+    framework: string;
+    sensors: string;
+    // Add an index signature if drone_details can have other dynamic keys
+    [key: string]: string;
+  };
+  drone_id: string;
+  id: number;
   status: string;
-  race_type: string;
-  action_space_type: string;
-  environment_simulation: string;
-  action_space: string;
-  reward_function: string;
-  framework: string;
-  sensors: string;
-  algorithm: string;
-  hyperparameters: { [key: string]: string };
+  title: string; // This will now serve as drone_name
+  train_accuracy: number | null;
+  train_loss: number | null;
+  training_epochs: number;
+  user_id: number;
+  // NOTE: 'drone_name', 'race_type', 'action_space_type', 'environment_simulation',
+  // 'action_space', 'reward_function', 'framework', 'sensors', 'algorithm',
+  // 'hyperparameters' are now derived from 'title' and 'drone_details'
+  // within the component, so they are removed from the top-level interface.
 }
+
+type SimulationStatus = 'idle' | 'initializing' | 'training' | 'success' | 'failed';
 
 export default function ModelDetails({ params }: { params: Promise<{ modelId: string }> }) {
   const { modelId } = React.use(params);
@@ -77,6 +98,14 @@ export default function ModelDetails({ params }: { params: Promise<{ modelId: st
   });
 
   const [modelDetails, setModelDetails] = useState<DroneModel | null>(null);
+  const [gazeboStreamUrl, setGazeboStreamUrl] = useState<string>(`http://localhost:8000/gazebo-stream/${modelId}`);
+  const [simulationStatus, setSimulationStatus] = useState<SimulationStatus>('idle');
+
+  const [connectionStatus, setConnectionStatus] = useState<string>('Disconnected');
+  const [lastMessage, setLastMessage] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+
+
   const socketRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
@@ -88,15 +117,22 @@ export default function ModelDetails({ params }: { params: Promise<{ modelId: st
       return;
     }
 
+    // **********************************************************
+    // UPDATED axios call and data processing
+    // **********************************************************
     axios
-      .get(`http://localhost:models8000/users/${username}/drone-models/${modelId}`)
-      .then((res) => setModelDetails(res.data))
-      .catch((err) => console.error(err));
+      .get(`http://100.66.139.58:8000/users/${username}/drone-models/${modelId}`)
+      .then((res) => {
+        const fetchedData: DroneModel = res.data;
+        console.log("Model details fetched:", fetchedData);
+        setModelDetails(fetchedData); // Set the fetched data directly
+      })
+      .catch((err) => console.error("Error fetching model details:", err));
   }, [modelId]);
 
   // WebSocket for training updates
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8000/ws/train");
+    const ws = new WebSocket("ws://100.66.139.58:8000/ws/train");
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -123,13 +159,38 @@ export default function ModelDetails({ params }: { params: Promise<{ modelId: st
     };
   }, []);
 
-  // WebSocket for drone contromodelsl
+  // WebSocket for drone control
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8000/ws/control");
+    const socket = new WebSocket("ws://100.66.139.58:8000/ws/control");
+    const username = localStorage.getItem("username"); // Re-fetch username for potential use in stream URL
 
     socket.onopen = () => setIsConnected(true);
-    socket.onmessage = (event) => console.log("Received from server:", event.data);
-    socket.onclose = () => setIsConnected(false);
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("Received from server:", data);
+
+      setLastMessage(data.message || '');
+
+      // Handle different message types
+      if (data.type === 'simulation_status') {
+        setSimulationStatus(data.status);
+
+        // Set stream URL when simulation starts
+        if (data.status === 'training') {
+          setGazeboStreamUrl(`http://100.66.139.58:8000/gazebo-stream/${modelId}?username=${username}`);
+        } else if (data.status === 'idle') {
+          setGazeboStreamUrl(null);
+        }
+      } else if (data.type === 'command_sent') {
+        // Handle command confirmation
+        console.log(`Command confirmed: ${data.command}`);
+      }
+    };
+    socket.onclose = () => {
+      setIsConnected(false);
+      setConnectionStatus('Disconnected');
+      console.log("Control WebSocket closed");
+    };
     socket.onerror = (error) => console.error("WebSocket error:", error);
 
     socketRef.current = socket;
@@ -137,7 +198,44 @@ export default function ModelDetails({ params }: { params: Promise<{ modelId: st
     return () => {
       socket.close();
     };
-  }, []);
+  }, [modelId]); // Added username to dependency array if used in stream URL construction
+
+
+// Start simulation when the page loads
+useEffect(() => {
+  const initializeSimulation = async () => {
+    const username = localStorage.getItem("username");
+    if (!username) {
+      console.error("Username not found in localStorage");
+      return;
+    }
+
+    setSimulationStatus("initializing"); // Set status to initializing
+
+    try {
+      const response = await axios.post(
+        `http://100.66.139.58:8000/users/${username}/drone-models/${modelId}/start-simulation`
+      );
+
+      const result = response.data;
+      if (result.status === "success" || result.status === "already_running") {
+        setSimulationStatus("success");
+        setLastMessage(result.message);
+        setGazeboStreamUrl(`http://100.66.139.58:8000/gazebo-stream/${modelId}?username=${username}`);
+      } else {
+        setSimulationStatus("failed");
+        setLastMessage(result.message);
+      }
+    } catch (error: any) {
+      console.error("Error initializing simulation:", error);
+      setSimulationStatus("failed");
+      setLastMessage("Failed to initialize simulation.");
+    }
+  };
+
+  initializeSimulation();
+}, [modelId]);
+  
 
   const sendCommand = (command: string) => {
     if (socketRef.current && isConnected) {
@@ -159,12 +257,18 @@ export default function ModelDetails({ params }: { params: Promise<{ modelId: st
           Your models
         </Link>
         <div className="mx-2">{">"}</div>
-        <span>{modelDetails?.drone_name || modelId || "Loading..."}</span>
+        {/* ********************************************************** */}
+        {/* Using modelDetails.title for the model name in header */}
+        {/* ********************************************************** */}
+        <span>{modelDetails?.title || modelId || "Loading..."}</span>
       </header>
 
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">{modelDetails?.drone_name || "Loading..."}</h1>
+          {/* ********************************************************** */}
+          {/* Using modelDetails.title for the model name in heading */}
+          {/* ********************************************************** */}
+          <h1 className="text-2xl font-bold">{modelDetails?.title || "Loading..."}</h1>
           <div className="flex gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -187,12 +291,13 @@ export default function ModelDetails({ params }: { params: Promise<{ modelId: st
           <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm text-blue-800">
             <strong>Evaluate and compare your model's performance with new evaluation capabilities.</strong>
+            <br />
           </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 max-w-md">
-            <TabsTrigger value="tmodelsraining">Training</TabsTrigger>
+            <TabsTrigger value="training">Training</TabsTrigger> {/* Corrected value to 'training' */}
             <TabsTrigger value="evaluation">Evaluation</TabsTrigger>
           </TabsList>
 
@@ -203,43 +308,62 @@ export default function ModelDetails({ params }: { params: Promise<{ modelId: st
                 <CardTitle className="text-lg font-medium">Training Progress</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-64 w-full">
-                  <Line
-                    data={chartData}
-                    options={{
-                      responsive: true,
-                      scales: {
-                        x: { title: { display: true, text: "Epoch" } },
-                        y: { title: { display: true, text: "Value" }, beginAtZero: true },
-                      },
-                    }}
-                  />models
+                <div className="flex flex-col md:flex-row gap-4 w-full">
+                  {/* Graph section */}
+                  <div className="flex-1">
+                    <div className="h-64 w-full">
+                      <Line
+                        data={chartData}
+                        options={{
+                          responsive: true,
+                          scales: {
+                            x: { title: { display: true, text: "Epoch" } },
+                            y: { title: { display: true, text: "Value" }, beginAtZero: true },
+                          },
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Simulation video stream */}
+                  <div className="flex-1">
+                    {/* Display video stream if available, otherwise the placeholder */}
+                    {gazeboStreamUrl ? (
+                      <div className="h-64 w-full bg-black flex items-center justify-center rounded-lg overflow-hidden">
+                        <iframe
+                          src={gazeboStreamUrl}
+                          title="Gazebo Stream"
+                          width="100%"
+                          height="100%"
+                          frameBorder="0"
+                          allowFullScreen
+                        ></iframe>
+                      </div>
+                    ) : (
+                      <div className="bg-gray-100 rounded-lg p-8 text-center h-64 flex flex-col items-center justify-center">
+                        <div className="text-gray-400 mb-4">
+                          <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 14.846 4.632 16 6.414 16H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 6H6.28l-.31-1.243A1 1 0 005 4H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                          </svg>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          <strong>Simulation video stream not available.</strong>
+                          <br />
+                          Video is only available during training.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Simulation video stream */}
-            <div>
-              <h3 className="font-medium mb-4">Simulation video stream</h3>
-              <div className="bg-gray-100 rounded-lg p-8 text-center h-64 flex flex-col items-center justify-center">
-                <div className="text-gray-400 mb-4">
-                  <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M3 4a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 14.846 4.632 16 6.414 16H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 6H6.28l-.31-1.243A1 1 0 005 4H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                  </svg>
-                </div>
-                <p className="text-sm text-gray-600">
-                  <strong>Simulation video stream not available.</strong>
-                  <br />
-                  Video is only available during training.
-                </p>
-              </div>
-            </div>
 
             {/* Drone Control */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg font-medium">Drone Control Panel</CardTitle>
-              </CardHeader>models
+              </CardHeader>
               <CardContent>
                 <div className="space-x-2 mb-4">
                   <Button onClick={() => sendCommand("takeoff")} className="bg-yellow-500 text-white">Takeoff</Button>
@@ -250,6 +374,20 @@ export default function ModelDetails({ params }: { params: Promise<{ modelId: st
                   <Button onClick={() => sendCommand("turn_right")} className="bg-green-500 text-white">Turn Right</Button>
                 </div>
                 <p>Status: {isConnected ? "🟢 Connected" : "🔴 Disconnected"}</p>
+                {lastMessage && <p>Last Message: {lastMessage}</p>} {/* Display last message */}
+
+{simulationStatus === 'initializing' && (
+  <p className="text-yellow-600 font-medium">Initializing simulation...</p>
+)}
+
+{simulationStatus === 'success' && (
+  <p className="text-green-600 font-medium">Simulation initialized successfully ✅</p>
+)}
+
+{simulationStatus === 'failed' && (
+  <p className="text-red-600 font-medium">Failed to initialize simulation ❌</p>
+)}
+                {/* <Button onClick={stopSimulation} className="bg-red-600 text-white">Stop Simulation</Button> */}
               </CardContent>
             </Card>
 
@@ -260,16 +398,20 @@ export default function ModelDetails({ params }: { params: Promise<{ modelId: st
                   <CardTitle className="text-lg font-medium">Model Configuration</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="mb-2"><strong>Race Type:</strong> {modelDetails.race_type}</p>
-                  <p className="mb-2"><strong>Action Space Type:</strong> {modelDetails.action_space_type}</p>
-                  <p className="mb-2"><strong>Environment Simulation:</strong> {modelDetails.environment_simulation}</p>
-                  <p className="mb-models2"><strong>Action Space:</strong> {modelDetails.action_space}</p>
-                  <p className="mb-2"><strong>Reward Function:</strong> {modelDetails.reward_function}</p>
-                  <p className="mb-2"><strong>Framework:</strong> {modelDetails.framework}</p>
-                  <p className="mb-2"><strong>Sensors:</strong> {modelDetails.sensors}</p>
-                  <p className="mb-2"><strong>Algorithm:</strong> {modelDetails.algorithm}</p>
+                  {/* ********************************************************** */}
+                  {/* Displaying core model details from the root level of `modelDetails` */}
+                  {/* ********************************************************** */}
+                   
+                 <p className="mb-2"><strong>Model ID:</strong> {modelDetails.id}</p>
+                  <p className="mb-2"><strong>Drone ID:</strong> {modelDetails.drone_id}</p>
+                  <p className="mb-2"><strong>Status:</strong> {modelDetails.status}</p>
+                  <p className="mb-2"><strong>Description:</strong> {modelDetails.description}</p>
+                  <p className="mb-2"><strong>Training Epochs:</strong> {modelDetails.training_epochs}</p>
+                  <p className="mb-2"><strong>Train Accuracy:</strong> {modelDetails.train_accuracy !== null ? modelDetails.train_accuracy : "N/A"}</p>
+                  <p className="mb-2"><strong>Train Loss:</strong> {modelDetails.train_loss !== null ? modelDetails.train_loss : "N/A"}</p>
+                  <p className="mb-2"><strong>User ID:</strong> {modelDetails.user_id}</p>
 
-                  <h4 className="font-medium mt-4 mb-2">Hyperparameters</h4>
+                  <h4 className="font-medium mt-4 mb-2">Hyperparameters (from Drone Details)</h4>
                   <div className="border rounded-lg">
                     <Table>
                       <TableHeader>
@@ -279,12 +421,22 @@ export default function ModelDetails({ params }: { params: Promise<{ modelId: st
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {Object.entries(modelDetails.hyperparameters).map(([key, value], index) => (
+                        {/* ********************************************************** */}
+                        {/* Iterating over modelDetails.drone_details for hyperparameters */}
+                        {/* ********************************************************** */}
+                        {modelDetails.drone_details && Object.entries(modelDetails.drone_details).map(([key, value], index) => (
                           <TableRow key={index}>
-                            <TableCell>{key}</TableCell>
+                            <TableCell className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</TableCell> {/* Capitalize and add spaces */}
                             <TableCell>{value}</TableCell>
                           </TableRow>
                         ))}
+                        {!modelDetails.drone_details && (
+                          <TableRow>
+                            <TableCell colSpan={2} className="text-center text-gray-500">
+                              No drone details or hyperparameters found.
+                            </TableCell>
+                          </TableRow>
+                        )}
                       </TableBody>
                     </Table>
                   </div>

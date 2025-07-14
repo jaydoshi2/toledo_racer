@@ -71,7 +71,7 @@ const handleCreateModel = async () => {
     };
 
     // Send POST request to the correct endpoint
-    const response = await fetch(`http://localhost:8000/users/${username}/drone-models/`, {
+    const response = await fetch(`http://100.66.139.58:8000/users/${username}/drone-models/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
